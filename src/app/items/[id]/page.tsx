@@ -82,14 +82,14 @@ export default function ItemPage() {
         highestBidderId: user.uid
       });
 
-      // Notify previous highest bidder if they exist and are different from current bidder
-      if (highestBid && highestBid.userId !== user.uid) {
+      // Notify current user if they were the previous highest bidder
+      if (highestBid && highestBid.userId === user.uid) {
         toast.custom((t: { visible: boolean }) => (
           <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-amber-50 border-l-4 border-amber-500 p-4`}>
             <div className="flex">
               <div className="ml-3">
                 <p className="text-sm text-amber-700">
-                  Someone outbid you on {item.title}!
+                  You've been outbid on {item.title}!
                   <br />
                   New highest bid: ${bidValue.toFixed(2)}
                 </p>
@@ -97,7 +97,7 @@ export default function ItemPage() {
             </div>
           </div>
         ), {
-          id: `outbid-${highestBid.userId}`,
+          id: `outbid-${user.uid}`,
           duration: 5000
         });
       }
