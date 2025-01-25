@@ -26,8 +26,9 @@ def detect_objects(image_path):
     )
 
     if "Labels" in response:
-        # Exclude food-related objects
-        return [label for label in response["Labels"] if "Food" not in label["Name"]]
+        # Exclude food-related and electronics-related objects
+        return [label for label in response["Labels"] if
+                "Food" not in label["Name"] and "Electronics" not in label["Name"]]
     else:
         print("No objects detected.")
         return []
@@ -37,7 +38,7 @@ def search_price_with_serp_api(object_name):
     """
     Use SERP API to search for a single product price, excluding irrelevant results.
     :param object_name: The name of the detected object
-    :return: First reasonable price found or "Unknown" if no price is available
+    :return: First filtered price found or "Unknown" if no price is available
     """
     print(f"Searching for prices of '{object_name}'...")
     api_url = "https://serpapi.com/search"
@@ -56,31 +57,23 @@ def search_price_with_serp_api(object_name):
         # Extract all shopping results
         shopping_results = results.get("shopping_results", [])
         if shopping_results:
-            # Print all results for debugging
-            print("Shopping Results:", shopping_results)
-
             # Filter and return the most reasonable price
-            prices = []
             for result in shopping_results:
                 price = result.get("price", "Unknown")
                 if price != "Unknown" and price.startswith("$"):
                     try:
                         numeric_price = float(price.replace("$", "").replace(",", ""))
-                        if 5 <= numeric_price <= 50:  # Reasonable price range
-                            prices.append((result["title"], numeric_price))
+                        if 6 <= numeric_price:  # Reasonable price range
+                            print(f"Price Found: {price}")
+                            return price  # Return the first filtered value immediately
                     except ValueError:
                         continue
-
-            if prices:
-                print("Filtered Prices:", prices)
-                return f"${min(prices, key=lambda x: x[1])[1]:.2f}"
 
         print("No relevant prices found in the results.")
         return "Unknown"
     else:
         print(f"SERP API Error: {response.status_code}, {response.text}")
         return "Unknown"
-
 
 def visualize_objects(image_path, top_object, obj_price):
     """
@@ -115,7 +108,7 @@ def visualize_objects(image_path, top_object, obj_price):
 
 
 def main():
-    image_path = "pizza.jpg"  # Replace with your image path
+    image_path = "potato.jpg"  # Replace with your image path
 
     print("Detecting objects with AWS Rekognition...")
     detected_objects = detect_objects(image_path)
