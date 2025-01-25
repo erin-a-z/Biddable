@@ -16,6 +16,7 @@ export default function NewItemPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    summary: '',
     imageUrl: '',
     startingPrice: '',
     endTime: '',
@@ -29,7 +30,7 @@ export default function NewItemPage() {
 
   // Simplified generate description function
   const handleGenerateDescription = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Prevent any form submission
+    e.preventDefault();
 
     if (!formData.imageUrl) {
       toast.error('Please provide an image URL first');
@@ -51,13 +52,47 @@ export default function NewItemPage() {
         throw new Error(data.error || 'Failed to generate description');
       }
 
-      updateFormData('description', data.description || '');
+      setFormData(prev => ({ 
+        ...prev, 
+        description: data.description || '',
+        summary: data.summary || ''
+      }));
       toast.success('Description generated successfully!');
     } catch (error) {
       console.error('Generation error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to generate description');
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const generateSummary = async () => {
+    if (!formData.imageUrl) {
+      toast.error('Please provide an image URL first');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/generate-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: formData.imageUrl })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate summary');
+      }
+
+      setFormData(prev => ({ 
+        ...prev, 
+        summary: data.summary || ''
+      }));
+      toast.success('Summary generated successfully!');
+    } catch (error) {
+      console.error('Summary generation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate summary');
     }
   };
 
@@ -157,6 +192,30 @@ export default function NewItemPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Summary field with generate button */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Summary (for gallery view)</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={formData.summary}
+              onChange={(e) => updateFormData('summary', e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              maxLength={100}
+            />
+            <button
+              type="button"
+              onClick={generateSummary}
+              className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+            >
+              Generate Summary
+            </button>
+          </div>
+          <p className="mt-1 text-sm text-gray-500">
+            {formData.summary.length}/100 characters
+          </p>
         </div>
 
         {/* Other form fields */}

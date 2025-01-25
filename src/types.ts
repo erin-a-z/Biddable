@@ -4,6 +4,7 @@ export interface Item {
   id: string;
   title: string;
   description: string;
+  summary: string;
   imageUrl: string;
   startingPrice: number;
   currentPrice?: number;

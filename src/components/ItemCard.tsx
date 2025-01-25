@@ -33,19 +33,9 @@ export default function ItemCard({ item }: ItemCardProps) {
           <h3 className="text-base font-semibold text-gray-900 mb-1 truncate">
             {item.title}
           </h3>
-          <div className="text-gray-600 text-sm mb-2 line-clamp-2">
-            <ReactMarkdown
-              className="prose prose-sm max-w-none"
-              components={{
-                // Only allow basic formatting in card view
-                p: ({ children }) => <span>{children}</span>,
-                strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                em: ({ children }) => <em className="italic">{children}</em>,
-              }}
-            >
-              {item.description}
-            </ReactMarkdown>
-          </div>
+          <p className="text-gray-600 text-sm mb-2">
+            {item.summary || item.description.slice(0, 100) + '...'}
+          </p>
           <div className="flex justify-between items-end">
             <div>
               <p className="text-green-600 font-bold text-sm">

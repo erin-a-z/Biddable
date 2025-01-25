@@ -13,6 +13,7 @@ import { Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import BidHistory from '@/components/BidHistory';
 import { getMinimumBidIncrement } from '@/utils/bidding';
+import ReactMarkdown from 'react-markdown';
 
 export default function ItemPage() {
   const [user] = useAuthState(auth);
@@ -226,7 +227,29 @@ export default function ItemPage() {
                 </div>
               </div>
 
-              <p className="text-gray-600 leading-relaxed">{item.description}</p>
+              <div className="prose prose-lg max-w-none">
+                <ReactMarkdown
+                  className="text-gray-600"
+                  components={{
+                    p: ({ children }) => <p className="mb-4">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-4 mb-4">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-4 mb-4">{children}</ol>,
+                    li: ({ children }) => <li className="mb-2">{children}</li>,
+                    h1: ({ children }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
+                    h2: ({ children }) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
+                    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                    em: ({ children }) => <em className="italic">{children}</em>,
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-gray-200 pl-4 italic my-4">
+                        {children}
+                      </blockquote>
+                    ),
+                  }}
+                >
+                  {item.description}
+                </ReactMarkdown>
+              </div>
 
               {!isEnded && user ? (
                 <form onSubmit={handleBid} className="space-y-4">
