@@ -147,6 +147,14 @@ export default function ItemPage() {
                 <p className="text-gray-600">
                   Starting Price: ${item.startingPrice.toFixed(2)}
                 </p>
+                {item.reservePrice && (
+                  <p className={`text-sm mt-2 ${(item.currentPrice || item.startingPrice) >= item.reservePrice ? 'text-green-600' : 'text-amber-600'}`}>
+                    {(item.currentPrice || item.startingPrice) >= item.reservePrice ? 
+                      '✓ Reserve Price Met' : 
+                      (user?.uid === item.sellerId ? '⚠ Reserve Price Not Met' : '⚠ This item has a reserve price')
+                    }
+                  </p>
+                )}
                 <div className="mt-2 border-t pt-2">
                   <p className={`${isEnded ? 'text-red-500' : 'text-gray-600'}`}>
                     {isEnded ? (
