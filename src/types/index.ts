@@ -15,6 +15,7 @@ export interface Bid {
   id: string;
   itemId: string;
   userId: string;
+  userEmail: string;
   amount: number;
   createdAt: Date;
 }

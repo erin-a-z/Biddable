@@ -52,10 +52,10 @@ export default function ItemPage() {
 
       // Create the bid document
       const bid: Omit<Bid, 'id'> = {
-        itemId: item.id,
+        itemId: item.id!,
         userId: user.uid,
         amount: bidValue,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
         userEmail: user.email || 'Anonymous'
       };
 
@@ -63,7 +63,7 @@ export default function ItemPage() {
       await addDoc(collection(db, 'bids'), bid);
 
       // Update the item's current price
-      const itemRef = doc(db, 'items', item.id);
+      const itemRef = doc(db, 'items', item.id!);
       await updateDoc(itemRef, {
         currentPrice: bidValue
       });
