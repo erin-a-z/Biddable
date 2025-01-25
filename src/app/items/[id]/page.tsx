@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { doc, getDoc, updateDoc, collection, addDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, addDoc, onSnapshot, deleteDoc, query, getDocs, where, orderBy, limit } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { Item, Bid } from '@/types';
 import toast from 'react-hot-toast';
@@ -55,6 +55,16 @@ export default function ItemPage() {
     try {
       toast.loading('Placing your bid...');
 
+      // Get the current highest bidder before updating
+      const bidsRef = collection(db, 'bids');
+      const q = query(bidsRef, 
+        where('itemId', '==', item.id),
+        orderBy('amount', 'desc'),
+        limit(1)
+      );
+      const highestBidSnap = await getDocs(q);
+      const highestBid = highestBidSnap.docs[0]?.data() as Bid | undefined;
+
       const bid: Omit<Bid, 'id'> = {
         itemId: item.id!,
         userId: user.uid,
@@ -65,10 +75,32 @@ export default function ItemPage() {
 
       await addDoc(collection(db, 'bids'), bid);
 
+      // Update item with new price and track highest bidder
       const itemRef = doc(db, 'items', item.id!);
       await updateDoc(itemRef, {
-        currentPrice: bidValue
+        currentPrice: bidValue,
+        highestBidderId: user.uid
       });
+
+      // Notify previous highest bidder if they exist and are different from current bidder
+      if (highestBid && highestBid.userId !== user.uid) {
+        toast.custom((t: { visible: boolean }) => (
+          <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-amber-50 border-l-4 border-amber-500 p-4`}>
+            <div className="flex">
+              <div className="ml-3">
+                <p className="text-sm text-amber-700">
+                  Someone outbid you on {item.title}!
+                  <br />
+                  New highest bid: ${bidValue.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+        ), {
+          id: `outbid-${highestBid.userId}`,
+          duration: 5000
+        });
+      }
 
       setBidAmount('');
       toast.dismiss();
