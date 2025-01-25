@@ -12,6 +12,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import BidHistory from '@/components/BidHistory';
+import { getMinimumBidIncrement } from '@/utils/bidding';
 
 export default function ItemPage() {
   const [user] = useAuthState(auth);
@@ -65,10 +66,12 @@ export default function ItemPage() {
     if (!user || !item) return;
 
     const bidValue = parseFloat(bidAmount);
-    const minimumPrice = item.currentPrice || item.startingPrice;
+    const currentPrice = item.currentPrice || item.startingPrice;
+    const minIncrement = getMinimumBidIncrement(currentPrice);
+    const minimumBid = currentPrice + minIncrement;
     
-    if (isNaN(bidValue) || bidValue <= minimumPrice) {
-      toast.error(`Bid must be higher than current price: $${minimumPrice}`);
+    if (isNaN(bidValue) || bidValue < minimumBid) {
+      toast.error(`Minimum bid must be $${minimumBid.toFixed(2)} (${minIncrement.toFixed(2)} more than current bid)`);
       return;
     }
 
@@ -262,11 +265,11 @@ export default function ItemPage() {
                         name="bidAmount"
                         id="bidAmount"
                         step="0.01"
-                        min={item.currentPrice ? item.currentPrice + 0.01 : item.startingPrice + 0.01}
+                        min={(item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)}
                         value={bidAmount}
                         onChange={(e) => setBidAmount(e.target.value)}
                         className="block w-full pl-7 pr-12 py-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                        placeholder={`Min bid: $${(item.currentPrice ? item.currentPrice + 0.01 : item.startingPrice + 0.01).toFixed(2)}`}
+                        placeholder={`Min bid: $${((item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)).toFixed(2)}`}
                       />
                     </div>
                   </div>
