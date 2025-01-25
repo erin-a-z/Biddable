@@ -8,6 +8,7 @@ export interface Item {
   startingPrice: number;
   currentPrice?: number;
   reservePrice?: number;
+  highestBidderId?: string;
   endTime: Date | Timestamp;
   sellerId: string;
   createdAt: Date | Timestamp;

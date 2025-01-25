@@ -22,22 +22,42 @@ export default function ItemPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!params.id) return;
+    if (!params.id || !user) return;
 
     const itemRef = doc(db, 'items', params.id as string);
     const unsubscribe = onSnapshot(itemRef, (doc) => {
       if (doc.exists()) {
-        setItem({ id: doc.id, ...doc.data() } as Item);
+        const newItem = { id: doc.id, ...doc.data() } as Item;
+        setItem(newItem);
+        
+        // Show outbid notification if user was previously highest bidder but isn't anymore
+        if (item && // Previous item state exists
+            item.highestBidderId === user.uid && // User was highest bidder
+            newItem.highestBidderId !== user.uid && // User is no longer highest bidder
+            newItem.highestBidderId !== undefined) { // Someone else has bid
+          toast.custom((t: { visible: boolean }) => (
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-amber-50 border-l-4 border-amber-500 p-4`}>
+              <div className="flex">
+                <div className="ml-3">
+                  <p className="text-sm text-amber-700">
+                    You've been outbid on {newItem.title}!
+                    <br />
+                    New highest bid: ${(newItem.currentPrice || newItem.startingPrice).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ), {
+            id: `outbid-${user.uid}`,
+            duration: 5000
+          });
+        }
       }
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching item:', error);
-      toast.error('Error loading item details');
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [params.id]);
+  }, [params.id, user]);
 
   const handleBid = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +111,7 @@ export default function ItemPage() {
                 <p className="text-sm text-amber-700">
                   You've been outbid on {item.title}!
                   <br />
-                  New highest bid: ${bidValue.toFixed(2)}
+                  New highest bid: ${(item.currentPrice || item.startingPrice).toFixed(2)}
                 </p>
               </div>
             </div>
