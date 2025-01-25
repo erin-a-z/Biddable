@@ -1,0 +1,32 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Toaster } from 'react-hot-toast'
+import Navbar from '@/components/Navbar'
+import { AuthProvider } from '@/context/AuthContext'
+import { initializeFirestore } from '@/lib/initFirestore'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Online Bidding Platform',
+  description: 'Real-time auction platform',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
+          <Navbar />
+          <Toaster position="top-center" />
+          {children}
+        </AuthProvider>
+      </body>
+    </html>
+  )
+} 

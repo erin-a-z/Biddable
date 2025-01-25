@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optimize image container */
+.unsplash-img-container {
+  @apply relative w-full h-[180px] overflow-hidden;
+}
+
+.unsplash-img {
+  @apply object-cover w-full h-full !important;
+  position: relative !important;
+}
+
+/* Compact card layout */
+.item-card {
+  @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 h-full;
+  display: grid;
+  grid-template-rows: 180px auto;
+}
+
+.item-card-content {
+  @apply p-3;
+}
+
+/* Ensure image containers maintain aspect ratio */
+[data-unsplash-img-wrapper] {
+  @apply relative w-full;
+  aspect-ratio: 4/3;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Item detail page image constraints */
+.item-detail-image {
+  max-width: 500px !important;
+  max-height: 400px !important;
+  margin: 0 auto;
+  width: auto !important;
+  height: auto !important;
+}
+
+[data-item-image-wrapper] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  padding: 1rem;
+} 
