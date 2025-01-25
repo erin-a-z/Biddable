@@ -7,6 +7,7 @@ export interface Item {
   imageUrl: string;
   startingPrice: number;
   currentPrice?: number;
+  reservePrice?: number;
   endTime: Date | Timestamp;
   sellerId: string;
   createdAt: Date | Timestamp;

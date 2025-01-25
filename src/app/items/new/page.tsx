@@ -17,6 +17,7 @@ export default function NewItemPage() {
     imageUrl: '',
     startingPrice: '',
     endTime: '',
+    reservePrice: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,6 +109,24 @@ export default function NewItemPage() {
               onChange={(e) => setFormData({ ...formData, startingPrice: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Reserve Price ($) (Optional)
+            </label>
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={formData.reservePrice}
+              onChange={(e) => setFormData({ ...formData, reservePrice: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Minimum price for the item to sell"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              Leave empty for no reserve price
+            </p>
           </div>
 
           <div>

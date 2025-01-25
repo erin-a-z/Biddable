@@ -46,16 +46,15 @@ export default function ItemPage() {
 
     const bidValue = parseFloat(bidAmount);
     const minimumPrice = item.currentPrice || item.startingPrice;
+    
     if (isNaN(bidValue) || bidValue <= minimumPrice) {
       toast.error(`Bid must be higher than current price: $${minimumPrice}`);
       return;
     }
 
     try {
-      // Start a loading state
       toast.loading('Placing your bid...');
 
-      // Create the bid document
       const bid: Omit<Bid, 'id'> = {
         itemId: item.id!,
         userId: user.uid,
@@ -64,19 +63,21 @@ export default function ItemPage() {
         userEmail: user.email || 'Anonymous'
       };
 
-      // Add the bid to the bids collection
       await addDoc(collection(db, 'bids'), bid);
 
-      // Update the item's current price
       const itemRef = doc(db, 'items', item.id!);
       await updateDoc(itemRef, {
         currentPrice: bidValue
       });
 
-      // Clear the input and show success message
       setBidAmount('');
       toast.dismiss();
-      toast.success('Bid placed successfully!');
+      
+      if (item.reservePrice && bidValue >= item.reservePrice) {
+        toast.success('Bid placed successfully! Reserve price has been met!');
+      } else {
+        toast.success('Bid placed successfully!');
+      }
     } catch (error) {
       console.error('Error placing bid:', error);
       toast.dismiss();
