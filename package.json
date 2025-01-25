@@ -1,0 +1,41 @@
+{
+  "name": "hushbids",
+  "version": "1.0.0",
+  "description": "For QHacks 2026 NBC Silent Auction Website",
+  "main": "index.js",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "detect-libc": "^1.0.3",
+    "enhanced-resolve": "^5.18.0",
+    "graceful-fs": "^4.2.11",
+    "jiti": "^2.4.2",
+    "lightningcss": "^1.29.1",
+    "lightningcss-win32-x64-msvc": "^1.29.1",
+    "nanoid": "^3.3.8",
+    "next": "^15.1.6",
+    "nextjs": "^0.0.3",
+    "picocolors": "^1.1.1",
+    "postcss": "^8.5.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "source-map-js": "^1.2.1",
+    "tapable": "^2.2.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erin-a-z/HushBids.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erin-a-z/HushBids/issues"
+  },
+  "homepage": "https://github.com/erin-a-z/HushBids#readme"
+}
