@@ -1,5 +1,8 @@
-# SilentAuction
-For QHacks 2026 NBC Silent Auction Website
+# HushBids
+For QHacks 2026 NBC Silent Auction Website Challenge
+
+HushBids is a platform for silent auctions. Where users can upload images of items and set a starting price. And then other users can bid on the item. The highest bidder wins the item.
+
 
 Our Solution involves using computer vision to identifying items from user uploaded images, to provide a suggested price.
 

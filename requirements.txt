@@ -1,1 +1,5 @@
 psycopg2-binary==2.9.9
+# Only for testing
+Flask==3.0.0
+Werkzeug==3.0.0
+

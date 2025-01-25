@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Silent Auction</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        .register-form {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Register New User</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="register-form">
+        <form method="post">
+            <label>Email:</label><br>
+            <input type="email" name="email" required><br><br>
+            
+            <label>Password:</label><br>
+            <input type="password" name="password" required><br><br>
+            
+            <input type="submit" value="Register">
+        </form>
+    </div>
+
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html> 

@@ -134,6 +134,19 @@ class DatabaseAccess:
             print(f"Error retrieving auction bids: {e}")
             return []
 
+    def get_user_id_by_email(self, email: str) -> Optional[int]:
+        """Get user ID by email address"""
+        try:
+            self.cursor.execute(
+                "SELECT id FROM users WHERE email = %s",
+                (email,)
+            )
+            result = self.cursor.fetchone()
+            return result[0] if result else None
+        except Error as e:
+            print(f"Error getting user ID: {e}")
+            return None
+
 # Usage example:
 if __name__ == "__main__":
     # Example usage of the DatabaseAccess class
