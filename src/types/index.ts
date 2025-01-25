@@ -19,7 +19,7 @@ export interface Bid {
   userId: string;
   userEmail: string;
   amount: number;
-  createdAt: Date;
+  createdAt: Date | Timestamp;
 }
 
 export interface User {

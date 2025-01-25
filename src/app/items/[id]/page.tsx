@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { doc, getDoc, updateDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { useParams, useRouter } from 'next/navigation';
+import { doc, getDoc, updateDoc, collection, addDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { Item, Bid } from '@/types';
 import toast from 'react-hot-toast';
@@ -10,10 +10,13 @@ import Image from 'next/image';
 import moment from 'moment';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Timestamp } from 'firebase/firestore';
+import Link from 'next/link';
+import BidHistory from '@/components/BidHistory';
 
 export default function ItemPage() {
   const [user] = useAuthState(auth);
   const params = useParams();
+  const router = useRouter();
   const [item, setItem] = useState<Item | null>(null);
   const [bidAmount, setBidAmount] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -42,8 +45,9 @@ export default function ItemPage() {
     if (!user || !item) return;
 
     const bidValue = parseFloat(bidAmount);
-    if (isNaN(bidValue) || bidValue <= item.currentPrice) {
-      toast.error(`Bid must be higher than current price: $${item.currentPrice}`);
+    const minimumPrice = item.currentPrice || item.startingPrice;
+    if (isNaN(bidValue) || bidValue <= minimumPrice) {
+      toast.error(`Bid must be higher than current price: $${minimumPrice}`);
       return;
     }
 
@@ -56,7 +60,7 @@ export default function ItemPage() {
         itemId: item.id!,
         userId: user.uid,
         amount: bidValue,
-        createdAt: new Date(),
+        timestamp: new Date(),
         userEmail: user.email || 'Anonymous'
       };
 
@@ -77,6 +81,22 @@ export default function ItemPage() {
       console.error('Error placing bid:', error);
       toast.dismiss();
       toast.error('Failed to place bid. Please try again.');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    
+    try {
+      toast.loading('Deleting item...');
+      await deleteDoc(doc(db, 'items', params.id as string));
+      toast.dismiss();
+      toast.success('Item deleted successfully');
+      router.push('/');
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.dismiss();
+      toast.error('Failed to delete item');
     }
   };
 
@@ -121,7 +141,7 @@ export default function ItemPage() {
               <h1 className="text-2xl font-bold mb-4">{item.title}</h1>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <p className="text-xl font-bold text-green-600 mb-2">
-                  Current Price: ${item.currentPrice.toFixed(2)}
+                  Current Price: ${item.currentPrice?.toFixed(2) || item.startingPrice.toFixed(2)}
                 </p>
                 <p className="text-gray-600">
                   Starting Price: ${item.startingPrice.toFixed(2)}
@@ -147,6 +167,23 @@ export default function ItemPage() {
 
               <p className="text-gray-600 mb-6">{item.description}</p>
 
+              {user && user.uid === item.sellerId && (
+                <div className="flex gap-4 mb-6">
+                  <Link
+                    href={`/items/${item.id}/edit`}
+                    className="flex-1 bg-blue-100 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-200 text-center"
+                  >
+                    Edit Listing
+                  </Link>
+                  <button
+                    onClick={handleDelete}
+                    className="flex-1 bg-red-100 text-red-600 px-4 py-2 rounded-md hover:bg-red-200"
+                  >
+                    Delete Listing
+                  </button>
+                </div>
+              )}
+
               {user ? (
                 <form onSubmit={handleBid} className="space-y-4">
                   <div>
@@ -162,11 +199,11 @@ export default function ItemPage() {
                         name="bidAmount"
                         id="bidAmount"
                         step="0.01"
-                        min={item.currentPrice + 0.01}
+                        min={item.currentPrice ? item.currentPrice + 0.01 : item.startingPrice + 0.01}
                         value={bidAmount}
                         onChange={(e) => setBidAmount(e.target.value)}
                         className="block w-full pl-7 pr-12 py-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                        placeholder={`Min bid: $${(item.currentPrice + 0.01).toFixed(2)}`}
+                        placeholder={`Min bid: $${(item.currentPrice ? item.currentPrice + 0.01 : item.startingPrice + 0.01).toFixed(2)}`}
                       />
                     </div>
                   </div>
@@ -185,6 +222,9 @@ export default function ItemPage() {
             </div>
           </div>
         </div>
+
+        {/* Add bid history component */}
+        <BidHistory itemId={params.id as string} />
       </div>
     </div>
   );

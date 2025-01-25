@@ -17,12 +17,20 @@ export default function Navbar() {
           </Link>
           <div className="flex items-center gap-4">
             {user ? (
-              <button
-                onClick={() => auth.signOut()}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Sign Out
-              </button>
+              <>
+                <Link
+                  href="/settings"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Settings
+                </Link>
+                <button
+                  onClick={() => auth.signOut()}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Sign Out
+                </button>
+              </>
             ) : (
               <Link
                 href="/auth"
