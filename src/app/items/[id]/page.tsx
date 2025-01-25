@@ -31,11 +31,7 @@ export default function ItemPage() {
         const newItem = { id: doc.id, ...doc.data() } as Item;
         setItem(newItem);
         
-        // Show outbid notification if user was previously highest bidder but isn't anymore
-        if (item && // Previous item state exists
-            item.highestBidderId === user.uid && // User was highest bidder
-            newItem.highestBidderId !== user.uid && // User is no longer highest bidder
-            newItem.highestBidderId !== undefined) { // Someone else has bid
+        if (item && item.highestBidderId === user.uid && newItem.highestBidderId !== user.uid && newItem.highestBidderId !== undefined) {
           toast.custom((t: { visible: boolean }) => (
             <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-amber-50 border-l-4 border-amber-500 p-4`}>
               <div className="flex">
@@ -78,7 +74,6 @@ export default function ItemPage() {
     try {
       toast.loading('Placing your bid...');
 
-      // Get the current highest bidder before updating
       const bidsRef = collection(db, 'bids');
       const q = query(bidsRef, 
         where('itemId', '==', item.id),
@@ -98,14 +93,12 @@ export default function ItemPage() {
 
       await addDoc(collection(db, 'bids'), bid);
 
-      // Update item with new price and track highest bidder
       const itemRef = doc(db, 'items', item.id!);
       await updateDoc(itemRef, {
         currentPrice: bidValue,
         highestBidderId: user.uid
       });
 
-      // Notify current user if they were the previous highest bidder
       if (highestBid && highestBid.userId === user.uid) {
         toast.custom((t: { visible: boolean }) => (
           <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-amber-50 border-l-4 border-amber-500 p-4`}>
@@ -158,16 +151,16 @@ export default function ItemPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Loading...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
       </div>
     );
   }
 
   if (!item) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Item not found</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Item not found</div>
       </div>
     );
   }
@@ -176,122 +169,117 @@ export default function ItemPage() {
   const isEnded = endTime < new Date();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Image Container */}
-            <div className="h-[300px] relative bg-gray-50 p-4">
-              <Image
-                src={item.imageUrl}
-                alt={item.title}
-                width={400}
-                height={300}
-                className="mx-auto h-full w-auto object-contain"
-                priority
-              />
-            </div>
+    <main className="min-h-screen bg-gray-50 grid place-items-center">
+      <article className="max-w-4xl w-full mx-4 bg-white rounded-xl shadow-lg overflow-hidden">
+        <section className="grid grid-cols-1 md:grid-cols-2">
+          <figure className="text-center img-container aspect-w-16 aspect-h-9">
+            <img
+              src={item.imageUrl.includes('images.unsplash.com') 
+                ? `${item.imageUrl.split('?')[0]}?q=80&w=600&auto=format&fit=crop`
+                : item.imageUrl}
+              alt={item.title}
+              className="max-h-full w-full object-cover block"
+              loading="lazy"
+            />
+          </figure>
 
-            {/* Details Container */}
-            <div className="p-6">
-              <h1 className="text-2xl font-bold mb-4">{item.title}</h1>
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="text-xl font-bold text-green-600 mb-2">
-                  Current Price: ${item.currentPrice?.toFixed(2) || item.startingPrice.toFixed(2)}
-                </p>
-                <p className="text-gray-600">
-                  Starting Price: ${item.startingPrice.toFixed(2)}
-                </p>
-                {item.reservePrice && (
-                  ((item.currentPrice || item.startingPrice) >= item.reservePrice || user?.uid === item.sellerId) && (
-                    <p className={`text-sm mt-2 ${(item.currentPrice || item.startingPrice) >= item.reservePrice ? 'text-green-600' : 'text-amber-600'}`}>
-                      {(item.currentPrice || item.startingPrice) >= item.reservePrice ? 
-                        '✓ Reserve Price Met' : 
-                        '⚠ Reserve Price Not Met'
-                      }
-                    </p>
-                  )
-                )}
-                <div className="mt-2 border-t pt-2">
-                  <p className={`${isEnded ? 'text-red-500' : 'text-gray-600'}`}>
-                    {isEnded ? (
-                      'Auction Ended'
-                    ) : (
-                      <>
-                        Ends on {moment(endTime).format('MMMM D, YYYY')}
-                        <br />
-                        at {moment(endTime).format('h:mm A z')}
-                        <br />
-                        <span className="text-sm text-gray-500">
-                          ({moment(endTime).fromNow()})
-                        </span>
-                      </>
-                    )}
+          <div className="p-8 space-y-6 ">
+            <h1 className="text-3xl font-bold text-gray-900">{item.title}</h1>
+            
+            <div className="bg-gray-50 rounded-xl p-6 space-y-3 ">
+              <p className="text-2xl font-bold text-green-600">
+                ${(item.currentPrice || item.startingPrice).toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600">
+                Starting Price: ${item.startingPrice.toFixed(2)}
+              </p>
+              {item.reservePrice && (
+                ((item.currentPrice || item.startingPrice) >= item.reservePrice || user?.uid === item.sellerId) && (
+                  <p className={`text-sm font-medium ${(item.currentPrice || item.startingPrice) >= item.reservePrice ? 'text-green-600' : 'text-amber-600'}`}>
+                    {(item.currentPrice || item.startingPrice) >= item.reservePrice ? 
+                      '✓ Reserve Price Met' : 
+                      '⚠ Reserve Price Not Met'
+                    }
                   </p>
-                </div>
+                )
+              )}
+              <div className="pt-3 border-t border-gray-200">
+                <p className={`${isEnded ? 'text-red-600' : 'text-gray-700'} font-medium`}>
+                  {isEnded ? (
+                    'Auction Ended'
+                  ) : (
+                    <>
+                      Ends {moment(endTime).format('MMMM D, YYYY')} at {moment(endTime).format('h:mm A z')}
+                      <span className="block text-sm text-gray-500 mt-1">
+                        ({moment(endTime).fromNow()})
+                      </span>
+                    </>
+                  )}
+                </p>
               </div>
-
-              <p className="text-gray-600 mb-6">{item.description}</p>
-
-              {user && user.uid === item.sellerId && (
-                <div className="flex gap-4 mb-6">
-                  <Link
-                    href={`/items/${item.id}/edit`}
-                    className="flex-1 bg-blue-100 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-200 text-center"
-                  >
-                    Edit Listing
-                  </Link>
-                  <button
-                    onClick={handleDelete}
-                    className="flex-1 bg-red-100 text-red-600 px-4 py-2 rounded-md hover:bg-red-200"
-                  >
-                    Delete Listing
-                  </button>
-                </div>
-              )}
-
-              {user ? (
-                <form onSubmit={handleBid} className="space-y-4">
-                  <div>
-                    <label htmlFor="bidAmount" className="block text-sm font-medium text-gray-700">
-                      Your Bid
-                    </label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 sm:text-sm">$</span>
-                      </div>
-                      <input
-                        type="number"
-                        name="bidAmount"
-                        id="bidAmount"
-                        step="0.01"
-                        min={(item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)}
-                        value={bidAmount}
-                        onChange={(e) => setBidAmount(e.target.value)}
-                        className="block w-full pl-7 pr-12 py-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                        placeholder={`Min bid: $${((item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)).toFixed(2)}`}
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                  >
-                    Place Bid
-                  </button>
-                </form>
-              ) : (
-                <div className="text-center p-4 bg-gray-50 rounded-md">
-                  <p className="text-gray-600">Please sign in to place a bid</p>
-                </div>
-              )}
             </div>
-          </div>
-        </div>
 
-        {/* Add bid history component */}
+            <p className="text-gray-600 leading-relaxed">{item.description}</p>
+
+            {user && user.uid === item.sellerId && (
+              <div className="flex gap-4">
+                <Link
+                  href={`/items/${item.id}/edit`}
+                  className="flex-1 bg-blue-50 text-blue-600 px-4 py-3 rounded-lg hover:bg-blue-100 transition-colors text-center font-medium"
+                >
+                  Edit Listing
+                </Link>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 bg-red-50 text-red-600 px-4 py-3 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                >
+                  Delete Listing
+                </button>
+              </div>
+            )}
+
+            {!isEnded && user ? (
+              <form onSubmit={handleBid} className="space-y-4">
+                <div>
+                  <label htmlFor="bidAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Bid
+                  </label>
+                  <div className="relative rounded-lg shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <span className="text-gray-500">$</span>
+                    </div>
+                    <input
+                      type="number"
+                      name="bidAmount"
+                      id="bidAmount"
+                      step="0.01"
+                      min={(item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)}
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      className="block w-full pl-8 pr-12 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={`Min bid: $${((item.currentPrice || item.startingPrice) + getMinimumBidIncrement(item.currentPrice || item.startingPrice)).toFixed(2)}`}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Place Bid
+                </button>
+              </form>
+            ) : (
+              <div className="text-center p-6 bg-gray-50 rounded-lg">
+                <p className="text-gray-600">{isEnded ? 'The auction has ended. Bidding is closed.' : 'Please sign in to place a bid'}</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </article>
+
+      <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
         <BidHistory itemId={params.id as string} />
       </div>
-    </div>
+    </main>
   );
 } 

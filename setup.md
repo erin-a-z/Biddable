@@ -4,6 +4,9 @@
 
 1. Node.js version 18.17.0 or later
 2. npm version 9.0.0 or later
+3. Firebase + react-firebase-hooks
+4. Tailwind CSS
+
 
 ## Installation Steps
 

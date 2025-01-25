@@ -17,16 +17,15 @@ export default function ItemCard({ item }: ItemCardProps) {
   const isEnded = endTime < new Date();
 
   return (
-    <Link href={`/items/${item.id}`} className="block h-full">
-      <div className="item-card">
-        <div className="unsplash-img-container">
-          <Image
-            src={item.imageUrl}
+    <Link href={`/items/${item.id}`} className="block h-full w-full">
+      <div className="item-card w-full max-w-sm border rounded-lg shadow">
+        <div className="unsplash-img-container aspect-[4/3] overflow-hidden">
+          <img
+            src={item.imageUrl.includes('images.unsplash.com') 
+              ? `${item.imageUrl.split('?')[0]}?q=80&w=300&auto=format&fit=crop`
+              : item.imageUrl}
             alt={item.title}
-            width={300}
-            height={180}
-            className="unsplash-img rounded-t-lg"
-            priority
+            className="unsplash-img rounded-t-lg w-full h-full object-cover"
           />
         </div>
         <div className="item-card-content">
