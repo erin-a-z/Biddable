@@ -12,8 +12,9 @@ SERP_API_KEY = "81b3c1d633e6a2148865a28c9538c83fa6f6086b908b29023bc598ceb3b436c1
 def detect_objects(image_path):
     """
     Detect objects in an image using AWS Rekognition.
+    Prioritize specific categories over broad ones.
     :param image_path: Path to the image file
-    :return: List of detected objects excluding food
+    :return: The most specific detected object
     """
     with open(image_path, "rb") as image_file:
         image_bytes = image_file.read()
@@ -26,12 +27,24 @@ def detect_objects(image_path):
     )
 
     if "Labels" in response:
-        # Exclude food-related and electronics-related objects
-        return [label for label in response["Labels"] if
-                "Food" not in label["Name"] and "Electronics" not in label["Name"]]
+        # Sort labels by confidence
+        labels = sorted(response["Labels"], key=lambda label: label["Confidence"], reverse=True)
+
+        # Broad categories to deprioritize
+        broad_categories = {"Electronics", "Device", "Object", "Equipment", "Plant", "Food"}
+
+        # Filter specific categories
+        specific_labels = [label for label in labels if label["Name"] not in broad_categories]
+
+        if specific_labels:
+            # Return the most confident specific label
+            return specific_labels[0]
+        else:
+            # Fallback: return the most confident broad category
+            return labels[0]
     else:
         print("No objects detected.")
-        return []
+        return None
 
 
 def search_price_with_serp_api(object_name):
@@ -106,16 +119,13 @@ def visualize_objects(image_path, top_object, obj_price):
     image.save(output_path)
     print(f"Annotated image saved as {output_path}")
 
-
 def main():
     image_path = "potato.jpg"  # Replace with your image path
 
     print("Detecting objects with AWS Rekognition...")
-    detected_objects = detect_objects(image_path)
+    top_object = detect_objects(image_path)
 
-    if detected_objects:
-        # Find the object with the highest confidence
-        top_object = max(detected_objects, key=lambda obj: obj["Confidence"])
+    if top_object:  # Check if a valid object was returned
         obj_name = top_object["Name"]
         confidence = top_object["Confidence"]
         print(f"Top Detected Object: {obj_name} (Confidence: {confidence:.2f}%)")
