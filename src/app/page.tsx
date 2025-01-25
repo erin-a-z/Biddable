@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import ItemCard from '@/components/ItemCard';
 import { Item } from '@/types';
 import { initializeItems } from '@/lib/initFirestore';
+import Link from 'next/link';
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
@@ -44,14 +45,22 @@ export default function Home() {
             <h1 className="text-3xl font-bold text-gray-900">Active Auctions</h1>
             <p className="text-gray-600 mt-2">Discover unique items and place your bids</p>
           </div>
-          {process.env.NODE_ENV === 'development' && (
-            <button
-              onClick={initializeItems}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+          <div className="flex gap-4">
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={initializeItems}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+              >
+                Add Sample Items
+              </button>
+            )}
+            <Link 
+              href="/items/new"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
             >
-              Add Sample Items
-            </button>
-          )}
+              Add New Item
+            </Link>
+          </div>
         </div>
 
         {items.length === 0 ? (

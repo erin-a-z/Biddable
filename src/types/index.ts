@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface Item {
   id?: string;
   title: string;
@@ -5,8 +7,8 @@ export interface Item {
   imageUrl: string;
   currentPrice: number;
   startingPrice: number;
-  endTime: Date;
-  createdAt: Date;
+  endTime: Timestamp | Date;
+  createdAt: Timestamp | Date;
   sellerId: string;
   highestBidderId?: string;
 }

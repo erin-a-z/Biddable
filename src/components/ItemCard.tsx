@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Item } from '@/types';
 import moment from 'moment';
+import { Timestamp } from 'firebase/firestore';
 
 interface ItemCardProps {
   item: Item;
@@ -11,6 +12,9 @@ interface ItemCardProps {
 
 export default function ItemCard({ item }: ItemCardProps) {
   const router = useRouter();
+  // Convert Firestore Timestamp to Date
+  const endTime = item.endTime instanceof Timestamp ? item.endTime.toDate() : new Date(item.endTime);
+  const isEnded = endTime < new Date();
 
   return (
     <Link href={`/items/${item.id}`} className="block h-full">
@@ -37,12 +41,21 @@ export default function ItemCard({ item }: ItemCardProps) {
               <p className="text-green-600 font-bold text-sm">
                 ${item.currentPrice.toFixed(2)}
               </p>
-              <p className="text-gray-500 text-xs">
-                Ends {moment(item.endTime).fromNow()}
+              <p className={`text-xs ${isEnded ? 'text-red-500' : 'text-gray-500'}`}>
+                {isEnded ? 'Auction Ended' : (
+                  <>
+                    Ends {moment(endTime).format('MMM D, h:mm A')}
+                    <br />
+                    <span className="text-gray-400">
+                      ({moment(endTime).fromNow()})
+                    </span>
+                  </>
+                )}
               </p>
             </div>
-            <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
-              Bid Now →
+            <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full
+              ${isEnded ? 'bg-gray-50 text-gray-600' : 'bg-blue-50 text-blue-600'}`}>
+              {isEnded ? 'Ended' : 'Bid Now →'}
             </span>
           </div>
         </div>

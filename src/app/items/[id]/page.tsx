@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import Image from 'next/image';
 import moment from 'moment';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { Timestamp } from 'firebase/firestore';
 
 export default function ItemPage() {
   const [user] = useAuthState(auth);
@@ -95,6 +96,9 @@ export default function ItemPage() {
     );
   }
 
+  const endTime = item.endTime instanceof Timestamp ? item.endTime.toDate() : new Date(item.endTime);
+  const isEnded = endTime < new Date();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
@@ -122,9 +126,23 @@ export default function ItemPage() {
                 <p className="text-gray-600">
                   Starting Price: ${item.startingPrice.toFixed(2)}
                 </p>
-                <p className="text-gray-600">
-                  Ends {moment(item.endTime).fromNow()}
-                </p>
+                <div className="mt-2 border-t pt-2">
+                  <p className={`${isEnded ? 'text-red-500' : 'text-gray-600'}`}>
+                    {isEnded ? (
+                      'Auction Ended'
+                    ) : (
+                      <>
+                        Ends on {moment(endTime).format('MMMM D, YYYY')}
+                        <br />
+                        at {moment(endTime).format('h:mm A z')}
+                        <br />
+                        <span className="text-sm text-gray-500">
+                          ({moment(endTime).fromNow()})
+                        </span>
+                      </>
+                    )}
+                  </p>
+                </div>
               </div>
 
               <p className="text-gray-600 mb-6">{item.description}</p>
