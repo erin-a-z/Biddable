@@ -39,7 +39,7 @@ export default function ItemCard({ item }: ItemCardProps) {
           <div className="flex justify-between items-end">
             <div>
               <p className="text-green-600 font-bold text-sm">
-                ${item.currentPrice.toFixed(2)}
+                ${item.currentPrice?.toFixed(2) || item.startingPrice.toFixed(2)}
               </p>
               <p className={`text-xs ${isEnded ? 'text-red-500' : 'text-gray-500'}`}>
                 {isEnded ? 'Auction Ended' : (

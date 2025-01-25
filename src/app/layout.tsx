@@ -4,7 +4,7 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navbar from '@/components/Navbar'
 import { AuthProvider } from '@/context/AuthContext'
-import { initializeFirestore } from '@/lib/initFirestore'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
