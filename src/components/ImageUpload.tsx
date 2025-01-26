@@ -32,9 +32,10 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
       return;
     }
 
+    const loadingToastId = toast.loading('Uploading image...');
+    setUploading(true);
+
     try {
-      setUploading(true);
-      toast.loading('Uploading image...');
       const uploadResult = await startUpload([file]);
       
       if (uploadResult && uploadResult[0]) {
@@ -42,12 +43,14 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
         setPreview(downloadUrl);
         onImageSelect(file);
         onImageUrl(downloadUrl);
-        toast.dismiss();
+        toast.dismiss(loadingToastId);
         toast.success('Image uploaded successfully!');
+      } else {
+        throw new Error('Upload failed');
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.dismiss();
+      toast.dismiss(loadingToastId);
       toast.error('Failed to upload image');
     } finally {
       setUploading(false);
@@ -97,10 +100,14 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) validateAndUploadImage(file);
+              if (file) {
+                e.target.value = ''; // Reset input
+                validateAndUploadImage(file);
+              }
             }}
             className="hidden"
             ref={fileInputRef}
+            disabled={uploading}
           />
           <input
             type="file"
@@ -108,10 +115,14 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
             capture="environment"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) validateAndUploadImage(file);
+              if (file) {
+                e.target.value = ''; // Reset input
+                validateAndUploadImage(file);
+              }
             }}
             className="hidden"
             ref={cameraInputRef}
+            disabled={uploading}
           />
           
           {showUrlInput ? (
@@ -158,8 +169,14 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
                 disabled={uploading}
                 className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm"
               >
-                <FaUpload className="text-sm" />
-                <span className="hidden sm:inline">Upload</span>
+                {uploading ? (
+                  <span className="animate-pulse">Uploading...</span>
+                ) : (
+                  <>
+                    <FaUpload className="text-sm" />
+                    <span className="hidden sm:inline">Upload</span>
+                  </>
+                )}
               </button>
               
               <button
