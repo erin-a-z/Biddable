@@ -23,7 +23,7 @@ export default function Navbar() {
               priority
             />
             <span className="text-white font-bold text-lg sm:text-xl md:text-2xl">
-              Hush Bids
+              Biddable
             </span>
           </Link>
           <div className="flex items-center gap-4">
