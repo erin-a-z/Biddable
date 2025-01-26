@@ -13,11 +13,11 @@ export default function Home() {
 
   useEffect(() => {
     const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
-    
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map(doc => ({
+      const items = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       })) as Item[];
       setItems(items);
       setLoading(false);
@@ -37,44 +37,64 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <main className="container mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-          <div className="text-center md:text-left mb-6 md:mb-0">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">
-              Live Auctions
-            </h1>
-            <p className="text-lg text-gray-600">
-              Discover unique items and join the bidding excitement
-            </p>
-          </div>
-          <Link 
-            href="/items/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 
-              transition-all duration-200 transform hover:scale-105 shadow-md 
-              hover:shadow-lg flex items-center gap-1.5 text-sm font-medium"
-          >
-            <span>Add New Item</span>
-          </Link>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+          {/* Branding and Logo */}
+          <link
+              rel="stylesheet"
+              href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          />
+          <link
+              rel="stylesheet"
+              href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"
+          />
+          <a href="https://photos.google.com/photo/AF1QipMRdY1BsMGyMKi9CNGrr0oiLkOblsbdygz8l0iW" target="_blank"
+             rel="noopener noreferrer">
+              <img src="images/HUSH_BIDS_LOGO-removebg-preview.png" alt="Hush Bids Logo"
+                   className="fixed top-0 left-0 w-24 h-auto m-2 z-50"/>
+          </a>
 
-        {items.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
-            <div className="max-w-md mx-auto">
-              <p className="text-gray-500 text-lg">No active auctions at the moment.</p>
-              <p className="text-gray-400 mt-2">Be the first to list an item!</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
-            {items.map((item) => (
-              <div key={item.id} className="transform hover:-translate-y-1 transition-all duration-200 h-full w-md">
-                <ItemCard item={item} />
+          {/* Main Content */}
+          <main className="container mx-auto px-4 py-12">
+              <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+                  <div className="text-center md:text-left mb-6 md:mb-0">
+                      <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                          Live Auctions
+                      </h1>
+                      <p className="text-lg text-gray-600">
+                          Discover unique items and join the bidding excitement
+                      </p>
+                  </div>
+                  <Link
+                      href="/items/new"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700
+              transition-all duration-200 transform hover:scale-105 shadow-md
+              hover:shadow-lg flex items-center gap-1.5 text-sm font-medium"
+                  >
+                      <span>Add New Item</span>
+                  </Link>
               </div>
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+
+              {/* Auctions */}
+              {items.length === 0 ? (
+                  <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+                      <div className="max-w-md mx-auto">
+                          <p className="text-gray-500 text-lg">No active auctions at the moment.</p>
+                          <p className="text-gray-400 mt-2">Be the first to list an item!</p>
+                      </div>
+                  </div>
+              ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {items.map((item) => (
+                          <div
+                              key={item.id}
+                              className="transform hover:-translate-y-1 transition-all duration-200"
+                          >
+                              <ItemCard item={item}/>
+                          </div>
+                      ))}
+                  </div>
+              )}
+          </main>
+      </div>
   );
-} 
+}
