@@ -7,6 +7,7 @@ import { db, auth } from '@/lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function NewItemPage() {
   const [user] = useAuthState(auth);
@@ -242,25 +243,11 @@ export default function NewItemPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image URL input with generate button */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Image URL</label>
-              <div className="flex gap-2">
-                <input
-                    type="url"
-                    required
-                    value={formData.imageUrl}
-                    onChange={(e) => updatePreviewPic(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <button
-                    type="button"
-                    onClick={handleGenerateDescription}
-                    disabled={generating || !formData.imageUrl}
-                    className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
-                >
-                  {generating ? 'Generating...' : 'Generate'}
-                </button>
-              </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Item Image
+              </label>
+              <ImageUpload onImageSelect={(file) => setFormData(prev => ({ ...prev, image: file }))} />
             </div>
 
             {/* Description input with markdown preview */}

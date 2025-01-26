@@ -4,6 +4,7 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, setPersistence, browserLocalPersistence, Auth } from 'firebase/auth';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -33,5 +34,7 @@ if (typeof window !== 'undefined') {
     .then(yes => yes && (analytics = getAnalytics(app)))
     .catch(err => console.error('Analytics error:', err));
 }
+
+export const storage = getStorage(app);
 
 export { app, db, auth, analytics }; 
