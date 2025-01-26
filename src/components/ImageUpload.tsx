@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { FaCamera, FaUpload } from 'react-icons/fa';
+import { FaCamera, FaUpload, FaLink } from 'react-icons/fa';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 import toast from 'react-hot-toast';
@@ -14,6 +14,8 @@ interface ImageUploadProps {
 export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>(currentImageUrl || '');
   const [uploading, setUploading] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,67 +49,127 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
   };
 
   return (
-    <div className="space-y-4">
-      {preview ? (
-        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
-          <button
-            onClick={() => {
-              setPreview('');
-              onImageSelect('');
-            }}
-            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-            aria-label="Remove image"
-          >
-            ×
-          </button>
-        </div>
-      ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-          <p className="text-gray-500">Upload an image or take a photo</p>
-        </div>
-      )}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      {/* Preview Section */}
+      <div className="w-full h-full">
+        {preview ? (
+          <div className="relative w-full aspect-square md:aspect-video rounded-lg overflow-hidden bg-gray-100">
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full h-full object-cover"
+              onError={() => {
+                toast.error('Invalid image URL');
+                setPreview('');
+                onImageSelect('');
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setPreview('');
+                onImageSelect('');
+              }}
+              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+              aria-label="Remove image"
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center aspect-square md:aspect-video w-full">
+            <p className="text-gray-500">Upload an image, take a photo, or enter a URL</p>
+          </div>
+        )}
+      </div>
 
-      <div className="flex gap-4 justify-center">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-          ref={fileInputRef}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onChange={handleFileChange}
-          className="hidden"
-          ref={cameraInputRef}
-        />
-        
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
-        >
-          <FaUpload />
-          {uploading ? 'Uploading...' : 'Upload'}
-        </button>
-        
-        <button
-          type="button"
-          onClick={() => cameraInputRef.current?.click()}
-          disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-        >
-          <FaCamera />
-          {uploading ? 'Uploading...' : 'Take Photo'}
-        </button>
+      {/* Controls Section */}
+      <div className="w-full flex flex-col justify-center">
+        <div className="grid grid-cols-1 gap-3 w-full">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            ref={fileInputRef}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileChange}
+            className="hidden"
+            ref={cameraInputRef}
+          />
+          
+          {showUrlInput ? (
+            <div className="grid grid-cols-1 gap-2 w-full">
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="Enter image URL"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (urlInput) {
+                      setPreview(urlInput);
+                      onImageSelect(urlInput);
+                      setShowUrlInput(false);
+                      setUrlInput('');
+                    }
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowUrlInput(false)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 w-full">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                <FaUpload />
+                {uploading ? 'Uploading...' : 'Upload'}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                <FaCamera />
+                {uploading ? 'Uploading...' : 'Take Photo'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(true)}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                <FaLink />
+                URL
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -218,167 +218,157 @@ export default function NewItemPage() {
   if (!user) {
     return <div className="container mx-auto px-4 py-8 text-center">Please sign in to add items</div>;
   }
-  // style={{color: "white"}}
+
   return (
-      <div className="container max-w-500 mx-auto mx-4 px-4 py-8 flex">
-        <a target="_blank" rel="noopener noreferrer">
-          <img
-              src="bidable.jpg.png"
-              alt="Hush Bids Logo"
-              className="fixed top-0 left-0 w-24 h-auto m-2 z-50"
-          />
-        </a>
+    <div className="container mx-auto px-4 py-8">
+      <a target="_blank" rel="noopener noreferrer">
+        <img
+          src="bidable.jpg.png"
+          alt="Hush Bids Logo"
+          className="fixed top-0 left-0 w-24 h-auto m-2 z-50"
+        />
+      </a>
 
-        <div
-            className="border-3 border-solid md:border-dotted flex relative justify-center w-1/3 w-full overflow-hidden pb-2/3 mr-4">
-          <img className="absolute h-full w-full object-cover flex justify-center" id="previewImg"
-               src={imageSrc || "https://via.placeholder.com/150"}
-               alt="Incompatible/Invalid Image"/>
-        </div>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl text-gray-800 font-bold mb-6 text-center">Add New Item</h1>
 
-        <div className=""></div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Image Upload Section */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Item Image
+            </label>
+            <ImageUpload onImageSelect={(file) => setFormData(prev => ({ ...prev, image: file }))} />
+          </div>
 
-        <div className="w-2/3 ml-4">
-          <h1 className="text-2xl text-gray-800 font-bold mb-6 flex justify-center">Add New Item</h1>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Image URL input with generate button */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Item Image
-              </label>
-              <ImageUpload onImageSelect={(file) => setFormData(prev => ({ ...prev, image: file }))} />
+          {/* Description input with markdown preview */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <div className="mt-1 space-y-2">
+            <textarea
+                required
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                rows={4}
+            />
+              {formData.description && (
+                  <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-md">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
+                    <ReactMarkdown
+                        className="text-gray-600"
+                        components={{
+                          // Customize markdown components if needed
+                          p: ({children}) => <p className="mb-2">{children}</p>,
+                          ul: ({children}) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+                          ol: ({children}) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+                          li: ({children}) => <li className="mb-1">{children}</li>,
+                          h1: ({children}) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
+                          h2: ({children}) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
+                          h3: ({children}) => <h3 className="text-md font-bold mb-2">{children}</h3>,
+                          strong: ({children}) => <strong className="font-bold">{children}</strong>,
+                          em: ({children}) => <em className="italic">{children}</em>,
+                        }}
+                    >
+                      {formData.description}
+                    </ReactMarkdown>
+                  </div>
+              )}
             </div>
+          </div>
 
-            {/* Description input with markdown preview */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
-              <div className="mt-1 space-y-2">
-              <textarea
-                  required
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  rows={4}
-              />
-                {formData.description && (
-                    <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-md">
-                      <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
-                      <ReactMarkdown
-                          className="text-gray-600"
-                          components={{
-                            // Customize markdown components if needed
-                            p: ({children}) => <p className="mb-2">{children}</p>,
-                            ul: ({children}) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
-                            ol: ({children}) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
-                            li: ({children}) => <li className="mb-1">{children}</li>,
-                            h1: ({children}) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
-                            h2: ({children}) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
-                            h3: ({children}) => <h3 className="text-md font-bold mb-2">{children}</h3>,
-                            strong: ({children}) => <strong className="font-bold">{children}</strong>,
-                            em: ({children}) => <em className="italic">{children}</em>,
-                          }}
-                      >
-                        {formData.description}
-                      </ReactMarkdown>
-                    </div>
-                )}
-              </div>
-            </div>
+          {/* Summary field with generate button */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Summary (for gallery view)</label>
 
-            {/* Summary field with generate button */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Summary (for gallery view)</label>
-
-              <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={formData.summary}
-                    onChange={(e) => updateFormData('summary', e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    maxLength={100}
-                />
-                <button
-                    type="button"
-                    onClick={generateSummary}
-                    className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
-                >
-                  Generate Summary
-                </button>
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                {formData.summary.length}/100 characters
-              </p>
-            </div>
-
-            {/* Other form fields */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Title</label>
-              <div className="flex gap-2">
-                <input
-                    type="text"
-                    required
-                    value={formData.title}
-                    onChange={(e) => updateFormData('title', e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <button
-                    type="button"
-                    onClick={handleGenerateTitle}
-                    disabled={generatingTitle || !formData.imageUrl}
-                    className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
-                >
-                  {generatingTitle ? 'Generating...' : 'Generate'}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Starting Price ($)</label>
-              <div className="flex gap-2">
-                <input
-                    type="number"
-                    required
-                    min="0.01"
-                    step="0.01"
-                    value={formData.startingPrice}
-                    onChange={(e) => updateFormData('startingPrice', e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <button
-                    type="button"
-                    onClick={handleGeneratePrice}
-                    disabled={generatingPrice || !formData.imageUrl}
-                    className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
-                >
-                  {generatingPrice ? 'Generating...' : 'Generate'}
-                </button>
-              </div>
-            </div>
-
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">End Date and Time</label>
+            <div className="flex gap-2">
               <input
-                  type="datetime-local"
+                  type="text"
+                  value={formData.summary}
+                  onChange={(e) => updateFormData('summary', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  maxLength={100}
+              />
+              <button
+                  type="button"
+                  onClick={generateSummary}
+                  className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+              >
+                Generate Summary
+              </button>
+            </div>
+            <p className="mt-1 text-sm text-gray-500">
+              {formData.summary.length}/100 characters
+            </p>
+          </div>
+
+          {/* Other form fields */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <div className="flex gap-2">
+              <input
+                  type="text"
                   required
-                  value={formData.endTime}
-                  onChange={(e) => updateFormData('endTime', e.target.value)}
-                  min={new Date().toISOString().slice(0, 16)}
+                  value={formData.title}
+                  onChange={(e) => updateFormData('title', e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
+              <button
+                  type="button"
+                  onClick={handleGenerateTitle}
+                  disabled={generatingTitle || !formData.imageUrl}
+                  className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+              >
+                {generatingTitle ? 'Generating...' : 'Generate'}
+              </button>
             </div>
+          </div>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-yellow-500 text-gray-800 px-4 py-2 rounded-md  hover:text-yellow-50 hover:bg-gray-700 disabled:bg-blue-300"
-            >
-              {loading ? 'Adding...' : 'Add Item'}
-            </button>
-          </form>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Starting Price ($)</label>
+            <div className="flex gap-2">
+              <input
+                  type="number"
+                  required
+                  min="0.01"
+                  step="0.01"
+                  value={formData.startingPrice}
+                  onChange={(e) => updateFormData('startingPrice', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+              <button
+                  type="button"
+                  onClick={handleGeneratePrice}
+                  disabled={generatingPrice || !formData.imageUrl}
+                  className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+              >
+                {generatingPrice ? 'Generating...' : 'Generate'}
+              </button>
+            </div>
+          </div>
+
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">End Date and Time</label>
+            <input
+                type="datetime-local"
+                required
+                value={formData.endTime}
+                onChange={(e) => updateFormData('endTime', e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+
+          <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-yellow-500 text-gray-800 px-4 py-2 rounded-md  hover:text-yellow-50 hover:bg-gray-700 disabled:bg-blue-300"
+          >
+            {loading ? 'Adding...' : 'Add Item'}
+          </button>
+        </form>
       </div>
-  )
-      ;
+    </div>
+  );
 }
