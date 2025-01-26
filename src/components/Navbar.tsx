@@ -16,24 +16,17 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2">
             <Image
               src="/bidable.jpg.png"
-              alt="Biddable Logo"
+              alt="Hush Bids Logo"
               width={48}
               height={48}
               className="w-8 sm:w-10 md:w-12 h-auto transition-all duration-300"
               priority
             />
             <span className="text-white font-bold text-lg sm:text-xl md:text-2xl">
-              Biddable
+              Hush Bids
             </span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link
-              href="/items/new"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700
-                transition-all duration-200 text-sm font-medium"
-            >
-              Add Item
-            </Link>
             {user ? (
               <>
                 <Link

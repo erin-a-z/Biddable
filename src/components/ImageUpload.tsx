@@ -34,6 +34,7 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
 
     try {
       setUploading(true);
+      toast.loading('Uploading image...');
       const uploadResult = await startUpload([file]);
       
       if (uploadResult && uploadResult[0]) {
@@ -41,38 +42,24 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
         setPreview(downloadUrl);
         onImageSelect(file);
         onImageUrl(downloadUrl);
+        toast.dismiss();
         toast.success('Image uploaded successfully!');
       }
     } catch (error) {
       console.error('Error uploading image:', error);
+      toast.dismiss();
       toast.error('Failed to upload image');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      await validateAndUploadImage(file);
-    }
-  };
-
-  const handleUrlSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (urlInput.trim()) {
-      setPreview(urlInput.trim());
-      onImageUrl(urlInput.trim());
-      setShowUrlInput(false);
-    }
-  };
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+    <div className="grid grid-cols-1 gap-4 w-full">
       {/* Preview Section */}
-      <div className="w-full h-full">
+      <div className="w-full">
         {preview ? (
-          <div className="relative w-full aspect-square md:aspect-video rounded-lg overflow-hidden bg-gray-100">
+          <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
             <img
               src={preview}
               alt="Preview"
@@ -96,19 +83,22 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
             </button>
           </div>
         ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center aspect-square md:aspect-video w-full">
-            <p className="text-gray-500">Upload an image, take a photo, or enter a URL</p>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center aspect-square">
+            <p className="text-gray-500 text-sm">Upload an image, take a photo, or enter a URL</p>
           </div>
         )}
       </div>
 
       {/* Controls Section */}
-      <div className="w-full flex flex-col justify-center">
-        <div className="grid grid-cols-1 gap-3 w-full">
+      <div className="w-full">
+        <div className="grid grid-cols-1 gap-2">
           <input
             type="file"
             accept="image/*"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) validateAndUploadImage(file);
+            }}
             className="hidden"
             ref={fileInputRef}
           />
@@ -116,25 +106,35 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
             type="file"
             accept="image/*"
             capture="environment"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) validateAndUploadImage(file);
+            }}
             className="hidden"
             ref={cameraInputRef}
           />
           
           {showUrlInput ? (
-            <div className="grid grid-cols-1 gap-2 w-full">
+            <div className="space-y-2">
               <input
                 type="url"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder="Enter image URL"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={handleUrlSubmit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() => {
+                    if (urlInput.trim()) {
+                      setPreview(urlInput.trim());
+                      onImageUrl(urlInput.trim());
+                      setShowUrlInput(false);
+                      setUrlInput('');
+                    }
+                  }}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
                   Add
                 </button>
@@ -144,44 +144,44 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
                     setShowUrlInput(false);
                     setUrlInput('');
                   }}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
                 >
                   Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <>
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm"
               >
-                <FaUpload />
-                {uploading ? 'Uploading...' : 'Upload'}
+                <FaUpload className="text-sm" />
+                <span className="hidden sm:inline">Upload</span>
               </button>
               
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
                 disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
               >
-                <FaCamera />
-                {uploading ? 'Uploading...' : 'Take Photo'}
+                <FaCamera className="text-sm" />
+                <span className="hidden sm:inline">Camera</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowUrlInput(true)}
                 disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm"
               >
-                <FaLink />
-                URL
+                <FaLink className="text-sm" />
+                <span className="hidden sm:inline">URL</span>
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
