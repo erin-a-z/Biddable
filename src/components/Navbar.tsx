@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { auth } from '@/lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -9,14 +10,30 @@ export default function Navbar() {
   const [user] = useAuthState(auth);
 
   return (
-    <nav className="bg-gradient-to-r from-gray-800 via-gray-900 to-black shadow-lg border-b border-gray-700">
-      <div className="container mx-auto px-6 py-3">
-        <div className="flex justify-between items-center">
-          {/* Increased margin to shift "Biddify" further to the right */}
-          <Link href="/" className="text-xl font-bold text-white ml-10">
-            Biddable
+    <nav className="bg-gray-900 fixed w-full top-0 z-50 shadow-lg">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/bidable.jpg.png"
+              alt="Biddable Logo"
+              width={48}
+              height={48}
+              className="w-8 sm:w-10 md:w-12 h-auto transition-all duration-300"
+              priority
+            />
+            <span className="text-white font-bold text-lg sm:text-xl md:text-2xl">
+              Biddable
+            </span>
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/items/new"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700
+                transition-all duration-200 text-sm font-medium"
+            >
+              Add Item
+            </Link>
             {user ? (
               <>
                 <Link

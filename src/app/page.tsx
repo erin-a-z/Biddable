@@ -6,6 +6,8 @@ import { db } from '@/lib/firebase';
 import { Item } from '@/types';
 import ItemCard from '@/components/ItemCard';
 import Link from 'next/link';
+import Image from 'next/image';
+import Navbar from '@/components/Navbar';
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
@@ -48,26 +50,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-          rel="stylesheet"
-          href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"
-        />
-      </head>
-      <a href="https://imgur.com/gallery/biddable-part-2-rvXoLdv" target="_blank" rel="noopener noreferrer">
-        <img
-          src="bidable.jpg.png"
-          alt="Hush Bids Logo"
-          className="fixed top-0 left-0 w-12 h-auto m-2 z-50"
-        />
-      </a>
-
-      <main className="container mx-auto px-4 py-12">
+      <Navbar />
+      <main className="container mx-auto px-4 py-12 mt-16">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div className="text-center md:text-left mb-6 md:mb-0">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">

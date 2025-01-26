@@ -327,6 +327,12 @@ export default function ItemPage() {
           />
         </div>
       </div>
+
+      <img
+        src="bidable.jpg.png"
+        alt="Hush Bids Logo"
+        className="fixed top-0 left-0 w-8 sm:w-12 md:w-16 lg:w-24 h-auto m-2 z-50 transition-all duration-300"
+      />
     </main>
   );
 } 
