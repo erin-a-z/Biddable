@@ -53,6 +53,7 @@ export default function ItemCard({ item }: ItemCardProps) {
                 )}
               </p>
             </div>
+            <span>something here</span>
             <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full
               ${isEnded ? 'bg-gray-50 text-gray-600' : 'bg-blue-50 text-blue-600'}`}>
               {isEnded ? 'Ended' : 'Bid Now →'}
