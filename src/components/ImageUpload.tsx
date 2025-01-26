@@ -19,7 +19,14 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadImage = async (file: File) => {
+  const validateAndUploadImage = async (file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
       toast.error('Image must be less than 5MB');
       return;
@@ -27,11 +34,21 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
 
     try {
       setUploading(true);
-      const storageRef = ref(storage, `items/${Date.now()}-${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      setPreview(url);
-      onImageSelect(url);
+      
+      // Create a unique filename
+      const timestamp = Date.now();
+      const uniqueFilename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+      const storageRef = ref(storage, `items/${uniqueFilename}`);
+
+      // Upload the file
+      const snapshot = await uploadBytes(storageRef, file);
+      
+      // Get the download URL
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      
+      // Update preview and notify parent
+      setPreview(downloadUrl);
+      onImageSelect(downloadUrl);
       toast.success('Image uploaded successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -44,7 +61,33 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      await uploadImage(file);
+      await validateAndUploadImage(file);
+    }
+  };
+
+  const handleUrlSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!urlInput) return;
+
+    try {
+      // Validate URL
+      const url = new URL(urlInput);
+      
+      // Test if the URL points to an image
+      const response = await fetch(url.toString(), { method: 'HEAD' });
+      const contentType = response.headers.get('content-type');
+      
+      if (!contentType?.startsWith('image/')) {
+        throw new Error('URL does not point to a valid image');
+      }
+
+      setPreview(urlInput);
+      onImageSelect(urlInput);
+      setShowUrlInput(false);
+      setUrlInput('');
+      toast.success('Image URL added successfully!');
+    } catch (error) {
+      toast.error('Please enter a valid image URL');
     }
   };
 
@@ -114,22 +157,17 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (urlInput) {
-                      setPreview(urlInput);
-                      onImageSelect(urlInput);
-                      setShowUrlInput(false);
-                      setUrlInput('');
-                    }
-                  }}
+                  onClick={handleUrlSubmit}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Add
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowUrlInput(false)}
+                  onClick={() => {
+                    setShowUrlInput(false);
+                    setUrlInput('');
+                  }}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Cancel
@@ -137,7 +175,7 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 w-full">
+            <>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -167,7 +205,7 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
                 <FaLink />
                 URL
               </button>
-            </div>
+            </>
           )}
         </div>
       </div>
