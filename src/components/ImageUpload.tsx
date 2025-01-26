@@ -7,11 +7,12 @@ import { storage } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 
 interface ImageUploadProps {
-  onImageSelect: (url: string) => void;
+  onImageSelect: (file: File | null) => void;
+  onImageUrl: (url: string) => void;
   currentImageUrl?: string;
 }
 
-export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUploadProps) {
+export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>(currentImageUrl || '');
   const [uploading, setUploading] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -48,7 +49,7 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
       
       // Update preview and notify parent
       setPreview(downloadUrl);
-      onImageSelect(downloadUrl);
+      onImageSelect(file);
       toast.success('Image uploaded successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -65,29 +66,12 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
     }
   };
 
-  const handleUrlSubmit = async (e: React.FormEvent) => {
+  const handleUrlSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!urlInput) return;
-
-    try {
-      // Validate URL
-      const url = new URL(urlInput);
-      
-      // Test if the URL points to an image
-      const response = await fetch(url.toString(), { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      
-      if (!contentType?.startsWith('image/')) {
-        throw new Error('URL does not point to a valid image');
-      }
-
-      setPreview(urlInput);
-      onImageSelect(urlInput);
+    if (urlInput.trim()) {
+      setPreview(urlInput.trim());
+      onImageUrl(urlInput.trim());
       setShowUrlInput(false);
-      setUrlInput('');
-      toast.success('Image URL added successfully!');
-    } catch (error) {
-      toast.error('Please enter a valid image URL');
     }
   };
 
@@ -104,14 +88,14 @@ export default function ImageUpload({ onImageSelect, currentImageUrl }: ImageUpl
               onError={() => {
                 toast.error('Invalid image URL');
                 setPreview('');
-                onImageSelect('');
+                onImageSelect(null);
               }}
             />
             <button
               type="button"
               onClick={() => {
                 setPreview('');
-                onImageSelect('');
+                onImageSelect(null);
               }}
               className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
               aria-label="Remove image"

@@ -41,7 +41,7 @@ export default function NewItemPage() {
 
   // Simplified generate description function
   const handleGenerateDescription = async () => {
-    if (!formData.imageUrl || generating) {
+    if (!formData.imageUrl) {
       toast.error('Please provide an image URL first');
       return;
     }
@@ -59,12 +59,16 @@ export default function NewItemPage() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to generate description');
+        throw new Error(data.error || 'Failed to generate description');
       }
 
-      const data = await response.json();
+      if (!data.description) {
+        throw new Error('No description was generated');
+      }
+
       setFormData(prev => ({
         ...prev,
         description: data.description
@@ -240,7 +244,13 @@ export default function NewItemPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Item Image
             </label>
-            <ImageUpload onImageSelect={(file) => setFormData(prev => ({ ...prev, image: file }))} />
+            <ImageUpload 
+              onImageSelect={(file) => setFormData(prev => ({ ...prev, image: file }))}
+              onImageUrl={(url) => {
+                setFormData(prev => ({ ...prev, imageUrl: url }));
+                setImageSrc(url);
+              }}
+            />
           </div>
 
           {/* Description input with markdown preview */}

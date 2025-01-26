@@ -42,7 +42,9 @@ export async function POST(request: Request) {
             },
             {
               type: "image_url",
-              image_url: imageUrl
+              image_url: {
+                url: imageUrl
+              }
             }
           ]
         }

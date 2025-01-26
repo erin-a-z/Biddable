@@ -1,13 +1,47 @@
 # SilentAuction
-For QHacks 2026 NBC Silent Auction Website
+For QHacks 2024 Silent Auction Website
 
-Our Solution involves using computer vision to identifying items from user uploaded images, to provide a suggested price.
+## Overview
+A modern auction platform that leverages AI to streamline the listing process. Our solution uses computer vision to identify items from user-uploaded images and provide suggested prices, descriptions, and titles automatically.
 
-It has two parts, the front end and back end
+## Features
+- AI-powered item recognition and price suggestions
+- Automated description and title generation
+- Real-time bidding system
+- Responsive design for mobile and desktop
+- Secure user authentication
+- Image upload with multiple options (file, camera, URL)
+- Markdown support for item descriptions
+- Real-time bid tracking and history
+- Share functionality for auctions
 
-## The frontend
-The frontend includes ****(_Insert Framework name), and uses responsive design to ensure compatibility for both mobile and desktop.
-It uses ****(_Insert Solution Name) for authentication and ensure data safety.
+## Technology Stack
+### Frontend
+- Next.js 14 with App Router
+- Tailwind CSS for responsive design
+- React Markdown for rich text rendering
+- Firebase Authentication for user management
 
-## The backend
-The backend entails a database that exposes only selected endpoints that the front end can interact with to ensure limited access only when needed.
+### Backend
+- Firebase Firestore for database
+- Firebase Storage for image hosting
+- OpenAI GPT-4 Vision for AI features
+- Next.js API routes for serverless functions
+
+### AI Features
+- GPT-4 for image analysis
+- Automated price estimation
+- Smart description generation
+- Title suggestions based on image content
+
+## Security
+- Firebase Authentication for secure user access
+- Protected API endpoints
+- Real-time data validation
+- Secure image upload handling
+
+## Responsive Design
+- Mobile-first approach
+- Adaptive layouts for all screen sizes
+- Optimized image loading
+- Touch-friendly interface
