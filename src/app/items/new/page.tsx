@@ -229,6 +229,7 @@ export default function NewItemPage() {
         />
       </a>
 
+
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl text-gray-800 font-bold mb-6 text-center">Add New Item</h1>
 
