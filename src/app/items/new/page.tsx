@@ -133,8 +133,8 @@ export default function NewItemPage() {
   }
 
   return (
-    <div className="container max-w-lg mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Add New Item</h1>
+    <div className="container max-w-lg mx-auto px-4 py-8 bg-red-400">
+      <h1 className="text-2xl font-bold mb-6">Add New Item!</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Image URL input with generate button */}
         <div>
