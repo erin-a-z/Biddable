@@ -14,6 +14,7 @@ import Link from 'next/link';
 import BidHistory from '@/components/BidHistory';
 import { getMinimumBidIncrement } from '@/utils/bidding';
 import ReactMarkdown from 'react-markdown';
+import ShareButtons from '@/components/ShareButtons';
 
 export default function ItemPage() {
   const [user] = useAuthState(auth);
@@ -316,6 +317,14 @@ export default function ItemPage() {
             </div>
           </div>
         )}
+
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Share this auction</h3>
+          <ShareButtons 
+            title={item.title} 
+            url={typeof window !== 'undefined' ? window.location.href : ''}
+          />
+        </div>
       </div>
     </main>
   );

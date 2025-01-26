@@ -1,6 +1,8 @@
 module.exports = {
   content: [
-    './src/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx,html}',
+    './src/app/items/*.{js,ts,jsx,tsx,html}',
+
   ],
   theme: {
     extend: {},
@@ -9,4 +11,4 @@ module.exports = {
     require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/typography'),
   ],
-} 
+}
