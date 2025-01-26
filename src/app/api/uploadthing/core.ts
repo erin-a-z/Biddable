@@ -1,8 +1,11 @@
 import { createUploadthing } from "uploadthing/next";
+import { UTApi } from "uploadthing/server";
 
-const f = createUploadthing({
+export const utapi = new UTApi({
   apiKey: process.env.UPLOADTHING_TOKEN
 });
+
+const f = createUploadthing();
 
 export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
