@@ -13,6 +13,8 @@ export default function NewItemPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [generatingTitle, setGeneratingTitle] = useState(false);
+  const [generatingPrice, setGeneratingPrice] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -104,6 +106,81 @@ export default function NewItemPage() {
     }
   };
 
+  // Simplified generate Title function
+  const handleGenerateTitle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!formData.imageUrl) {
+      toast.error('Please provide an image URL first');
+      return;
+    }
+
+    setGeneratingTitle(true);
+
+    try {
+      const response = await fetch('/api/generate-title', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: formData.imageUrl })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate title');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        title: data.title || '',
+      }));
+      toast.success('Title generated successfully!');
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate title');
+    } finally {
+      setGeneratingTitle(false);
+    }
+  };
+
+  // Simplified generate Price function
+  const handleGeneratePrice = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!formData.imageUrl) {
+      toast.error('Please provide an image URL first');
+      return;
+    }
+
+    setGeneratingPrice(true);
+
+    try {
+      const response = await fetch('/api/generate-price', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: formData.imageUrl })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate price');
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        startingPrice: data.startingPrice || '',
+      }));
+      toast.success('Price generated successfully!');
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate price');
+    } finally {
+      setGeneratingPrice(false);
+    }
+  };
+
+
   // Form submission handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -146,8 +223,10 @@ export default function NewItemPage() {
   return (
       <div className="container max-w-500 mx-auto mx-4 px-4 py-8 flex">
 
-        <div className="border-2 border-solid md:border-dotted flex relative justify-center w-1/3 w-full overflow-hidden pb-2/3 mr-4">
-          <img className="absolute h-full w-full object-cover flex justify-center" id="previewImg" src={imageSrc || "https://via.placeholder.com/150"}
+        <div
+            className="border-2 border-solid md:border-dotted flex relative justify-center w-1/3 w-full overflow-hidden pb-2/3 mr-4">
+          <img className="absolute h-full w-full object-cover flex justify-center" id="previewImg"
+               src={imageSrc || "https://via.placeholder.com/150"}
                alt="Incompatible/Invalid Image"/>
         </div>
 
@@ -242,7 +321,7 @@ export default function NewItemPage() {
 
             {/* Other form fields */}
             <div>
-              <label className="block text-sm font-medium text-blue-700">Title</label>
+              <label className="block text-sm font-medium text-gray-700">Title</label>
               <input
                   type="text"
                   required
@@ -250,6 +329,14 @@ export default function NewItemPage() {
                   onChange={(e) => updateFormData('title', e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
+              <button
+                  type="button"
+                  onClick={handleGenerateTitle}
+                  disabled={generatingTitle || !formData.imageUrl}
+                  className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+              >
+                {generatingTitle ? 'Generating...' : 'Generate'}
+              </button>
             </div>
 
             <div>
@@ -263,7 +350,16 @@ export default function NewItemPage() {
                   onChange={(e) => updateFormData('startingPrice', e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
+              <button
+                  type="button"
+                  onClick={handleGeneratePrice}
+                  disabled={generatingPrice || !formData.imageUrl}
+                  className="mt-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300"
+              >
+                {generatingPrice ? 'Generating...' : 'Generate'}
+              </button>
             </div>
+
 
             <div>
               <label className="block text-sm font-medium text-gray-700">End Date and Time</label>
@@ -286,6 +382,7 @@ export default function NewItemPage() {
             </button>
           </form>
         </div>
-      </div>
-  );
+</div>
+)
+  ;
 }
