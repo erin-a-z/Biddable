@@ -224,7 +224,7 @@ export default function NewItemPage() {
       <div className="container max-w-500 mx-auto mx-4 px-4 py-8 flex">
 
         <div
-            className="border-2 border-solid md:border-dotted flex relative justify-center w-1/3 w-full overflow-hidden pb-2/3 mr-4">
+            className="border-3 border-solid md:border-dotted flex relative justify-center w-1/3 w-full overflow-hidden pb-2/3 mr-4">
           <img className="absolute h-full w-full object-cover flex justify-center" id="previewImg"
                src={imageSrc || "https://via.placeholder.com/150"}
                alt="Incompatible/Invalid Image"/>
