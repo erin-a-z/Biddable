@@ -24,7 +24,7 @@ A modern auction platform that leverages AI to streamline the listing process. O
 
 ### Backend
 - Firebase Firestore for database
-- Firebase Storage for image hosting
+- Uploadthing for image hosting
 - OpenAI GPT-4 Vision for AI features
 - Next.js API routes for serverless functions
 

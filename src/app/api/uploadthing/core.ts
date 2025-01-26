@@ -1,20 +1,23 @@
-import { createUploadthing } from "uploadthing/next";
-import { UTApi } from "uploadthing/server";
-
-export const utapi = new UTApi({
-  apiKey: process.env.UPLOADTHING_TOKEN
-});
+import type { NextApiRequest, NextApiResponse } from "next";
+import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 const f = createUploadthing();
 
+const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "testUser" });
+
 export const ourFileRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-    .middleware(() => {
-      return { userId: "testUser" };
+  imageUploader: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 }
+  })
+    .middleware(async ({ req, res }) => {
+      const user = await auth(req, res);
+      return { userId: user.id };
     })
-    .onUploadComplete(() => {
-      console.log("Upload complete");
-    })
-};
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Upload complete for userId:", metadata.userId);
+      console.log("file url", file.url);
+      return { uploadedBy: metadata.userId };
+    }),
+} satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter; 
