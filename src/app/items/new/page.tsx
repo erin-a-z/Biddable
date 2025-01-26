@@ -41,7 +41,10 @@ export default function NewItemPage() {
 
   // Simplified generate description function
   const handleGenerateDescription = async () => {
-    if (!formData.imageUrl || generating) return;
+    if (!formData.imageUrl || generating) {
+      toast.error('Please provide an image URL first');
+      return;
+    }
     
     try {
       setGenerating(true);
@@ -52,12 +55,13 @@ export default function NewItemPage() {
         },
         body: JSON.stringify({
           imageUrl: formData.imageUrl,
-          title: formData.title
+          title: formData.title || 'Untitled Item'
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate description');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate description');
       }
 
       const data = await response.json();
@@ -68,7 +72,7 @@ export default function NewItemPage() {
       toast.success('Description generated successfully!');
     } catch (error) {
       console.error('Error generating description:', error);
-      toast.error('Failed to generate description. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Failed to generate description');
     } finally {
       setGenerating(false);
     }
