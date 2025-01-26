@@ -65,7 +65,7 @@ export default function Home() {
         <img
           src="bidable.jpg.png"
           alt="Hush Bids Logo"
-          className="fixed top-0 left-0 w-24 h-auto m-2 z-50"
+          className="fixed top-0 left-0 w-16 h-auto m-2 z-50"
         />
       </a>
 
@@ -74,8 +74,9 @@ export default function Home() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div className="text-center md:text-left mb-6 md:mb-0">
             <h1 className="text-4xl font-bold text-white mb-3">Live Auctions</h1>
-            <p className="text-lg text-gray-400">
-              Discover unique items and join the bidding excitement
+            <p className="text-lg text-gray-400">Step into the dynamic world of live auctions where treasures await!
+              From rare collectibles and vintage finds to luxury goods and <br/>
+              one-of-a-kind creations, there's something special for everyone.
             </p>
           </div>
           <Link
