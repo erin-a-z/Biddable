@@ -139,7 +139,6 @@ export default function NewItemPage() {
           {/* Image URL input with generate button */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Image URL</label>
-            <button className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3">Submit</button>
             <div className="flex gap-2">
               <input
                   type="url"
