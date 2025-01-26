@@ -11,7 +11,6 @@ export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Array of colors for the borders
   const colors = [
     'ring-red-500',
     'ring-blue-500',
@@ -25,7 +24,6 @@ export default function Home() {
 
   useEffect(() => {
     const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const items = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -50,42 +48,43 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      {/* Branding and Logo */}
-      <link
-        rel="stylesheet"
-        href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-      />
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"
-      />
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"
+        />
+      </head>
       <a href="https://imgur.com/gallery/biddable-part-2-rvXoLdv" target="_blank" rel="noopener noreferrer">
         <img
           src="bidable.jpg.png"
           alt="Hush Bids Logo"
-          className="fixed top-0 left-0 w-16 h-auto m-2 z-50"
+          className="fixed top-0 left-0 w-12 h-auto m-2 z-50"
         />
       </a>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div className="text-center md:text-left mb-6 md:mb-0">
-            <h1 className="text-4xl font-bold text-white mb-3">Live Auctions</h1>
-            <p className="text-lg text-gray-400">
-              Step into the dynamic world of live auctions where treasures
-              await! From rare collectibles and vintage finds to luxury goods
-              and <br /> one-of-a-kind creations, there's something special for
-              everyone.
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Live Auctions
+            </h1>
+            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+              Step into the dynamic world of live auctions where treasures await! From rare
+              collectibles to luxury goods and <br/> one-of-a-kind creations, there's something special for everyone.
             </p>
           </div>
           <Link
             href="/items/new"
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700
               transition-all duration-200 transform hover:scale-105 shadow-md
-              hover:shadow-lg flex items-center gap-1.5 text-sm font-medium"
+              hover:shadow-lg flex items-center gap-2 text-sm font-medium"
           >
-            <span>Add New Item</span>
+            Add New Item
           </Link>
         </div>
 
@@ -101,13 +100,7 @@ export default function Home() {
           </div>
         ) : (
           <div
-            className="grid gap-8"
-            style={{
-              gridTemplateColumns: `repeat(${Math.min(
-                items.length,
-                3
-              )}, 1fr)`, // Adjusted for responsiveness
-            }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             {items.map((item, index) => (
               <div
@@ -119,17 +112,11 @@ export default function Home() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   height: '100%',
-                  minHeight: '250px', // Adjust as needed
+                  minHeight: '250px',
                 }}
               >
                 {/* Content Below the Image */}
-                <div
-                  className="flex flex-col justify-center items-center mt-4"
-                  style={{
-                    flexGrow: 1,
-                    textAlign: 'center',
-                  }}
-                >
+                <div className="flex flex-col justify-center items-center mt-4">
                   <ItemCard item={item} />
                 </div>
               </div>
@@ -140,5 +127,3 @@ export default function Home() {
     </div>
   );
 }
-
-
