@@ -35,7 +35,7 @@ export async function POST(request: Request) {
           content: [
             {
               type: "text",
-              text: "From the image generate the average cost of the product in the image"
+              text: "Tell the number approximating the worth of the thing in the picture (CAD$). If you dont know just say a random value but dont say any words."
             },
             {
               type: "image_url",
@@ -55,7 +55,6 @@ export async function POST(request: Request) {
       frequency_penalty: 0.2, // Slight increase to encourage more diverse descriptions
       presence_penalty: 0.1
     });
-
     console.log('OpenAI response:', response);
 
     if (!response.choices?.[0]?.message?.content) {
@@ -63,7 +62,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      description: response.choices[0].message.content,
+      startingPrice: response.choices[0].message.content,
       status: 'success'
     });
 
