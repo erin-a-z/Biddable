@@ -40,38 +40,35 @@ export default function NewItemPage() {
   };
 
   // Simplified generate description function
-  const handleGenerateDescription = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    if (!formData.imageUrl) {
-      toast.error('Please provide an image URL first');
-      return;
-    }
-
-    setGenerating(true);
-
+  const handleGenerateDescription = async () => {
+    if (!formData.imageUrl || generating) return;
+    
     try {
+      setGenerating(true);
       const response = await fetch('/api/generate-description', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({imageUrl: formData.imageUrl})
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrl: formData.imageUrl,
+          title: formData.title
+        }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate description');
+        throw new Error('Failed to generate description');
       }
 
+      const data = await response.json();
       setFormData(prev => ({
         ...prev,
-        description: data.description || '',
-        summary: data.summary || ''
+        description: data.description
       }));
       toast.success('Description generated successfully!');
     } catch (error) {
-      console.error('Generation error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to generate description');
+      console.error('Error generating description:', error);
+      toast.error('Failed to generate description. Please try again.');
     } finally {
       setGenerating(false);
     }
@@ -246,34 +243,44 @@ export default function NewItemPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Description</label>
             <div className="mt-1 space-y-2">
-            <textarea
-                required
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                rows={4}
-            />
+              <div className="flex gap-2">
+                <textarea
+                  required
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  rows={4}
+                />
+                <button
+                  type="button"
+                  onClick={handleGenerateDescription}
+                  disabled={generating || !formData.imageUrl}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300 h-fit whitespace-nowrap"
+                >
+                  {generating ? 'Generating...' : 'Generate'}
+                </button>
+              </div>
               {formData.description && (
-                  <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-md">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
-                    <ReactMarkdown
-                        className="text-gray-600"
-                        components={{
-                          // Customize markdown components if needed
-                          p: ({children}) => <p className="mb-2">{children}</p>,
-                          ul: ({children}) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
-                          ol: ({children}) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
-                          li: ({children}) => <li className="mb-1">{children}</li>,
-                          h1: ({children}) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
-                          h2: ({children}) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
-                          h3: ({children}) => <h3 className="text-md font-bold mb-2">{children}</h3>,
-                          strong: ({children}) => <strong className="font-bold">{children}</strong>,
-                          em: ({children}) => <em className="italic">{children}</em>,
-                        }}
-                    >
-                      {formData.description}
-                    </ReactMarkdown>
-                  </div>
+                <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-md">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Preview:</h3>
+                  <ReactMarkdown
+                    className="text-gray-600"
+                    components={{
+                      // Customize markdown components if needed
+                      p: ({children}) => <p className="mb-2">{children}</p>,
+                      ul: ({children}) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+                      ol: ({children}) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+                      li: ({children}) => <li className="mb-1">{children}</li>,
+                      h1: ({children}) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
+                      h2: ({children}) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
+                      h3: ({children}) => <h3 className="text-md font-bold mb-2">{children}</h3>,
+                      strong: ({children}) => <strong className="font-bold">{children}</strong>,
+                      em: ({children}) => <em className="italic">{children}</em>,
+                    }}
+                  >
+                    {formData.description}
+                  </ReactMarkdown>
+                </div>
               )}
             </div>
           </div>

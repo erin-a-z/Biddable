@@ -92,6 +92,7 @@ export default function ItemPage() {
         timestamp: new Date(),
         userEmail: user.email || 'Anonymous'
       };
+      
 
       await addDoc(collection(db, 'bids'), bid);
 
