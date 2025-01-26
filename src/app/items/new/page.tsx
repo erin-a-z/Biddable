@@ -226,15 +226,6 @@ export default function NewItemPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <a target="_blank" rel="noopener noreferrer">
-        <img
-          src="bidable.jpg.png"
-          alt="Hush Bids Logo"
-          className="fixed top-0 left-0 w-24 h-auto m-2 z-50"
-        />
-      </a>
-
-
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl text-gray-800 font-bold mb-6 text-center">Add New Item</h1>
 

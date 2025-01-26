@@ -172,8 +172,8 @@ export default function ItemPage() {
   const isEnded = endTime < new Date();
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <main className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
         <article className="bg-white rounded-xl shadow-lg overflow-hidden">
           <section className="grid grid-cols-1 md:grid-cols-2">
             <figure className="text-center img-container aspect-w-16 aspect-h-9">
@@ -327,12 +327,6 @@ export default function ItemPage() {
           />
         </div>
       </div>
-
-      <img
-        src="bidable.jpg.png"
-        alt="Hush Bids Logo"
-        className="fixed top-0 left-0 w-8 sm:w-12 md:w-16 lg:w-24 h-auto m-2 z-50 transition-all duration-300"
-      />
     </main>
   );
 } 

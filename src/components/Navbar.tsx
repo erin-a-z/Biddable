@@ -16,7 +16,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2">
             <Image
               src="/bidable.jpg.png"
-              alt="Hush Bids Logo"
+              alt="Biddable Logo"
               width={48}
               height={48}
               className="w-8 sm:w-10 md:w-12 h-auto transition-all duration-300"
