@@ -11,6 +11,19 @@ export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Array of colors for the borders
+  const colors = [
+    'ring-red-500',
+    'ring-blue-500',
+    'ring-green-500',
+    'ring-yellow-500',
+    'ring-purple-500',
+    'ring-pink-500',
+    'ring-orange-500',
+    'ring-teal-500',
+  ];
+
+
   useEffect(() => {
     const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
 
@@ -90,10 +103,10 @@ export default function Home() {
       gridTemplateColumns: `repeat(${Math.ceil(Math.sqrt(items.length))}, 1fr)`,
     }}
   >
-    {items.map((item) => (
+    {items.map((item, index) => (
       <div
         key={item.id}
-        className="p-4 bg-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+        className={`p-4 bg-white rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${colors[index % colors.length]} ring-4`}
         style={{
           display: "flex",
           flexDirection: "column",
