@@ -2,8 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { FaCamera, FaUpload, FaLink } from 'react-icons/fa';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '@/lib/firebase';
+import { useUploadThing } from '@/lib/uploadthing';
 import toast from 'react-hot-toast';
 
 interface ImageUploadProps {
@@ -20,37 +19,30 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
+  const { startUpload } = useUploadThing("imageUploader");
+
   const validateAndUploadImage = async (file: File) => {
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file');
       return;
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error('Image must be less than 4MB');
       return;
     }
 
     try {
       setUploading(true);
+      const uploadResult = await startUpload([file]);
       
-      // Create a unique filename
-      const timestamp = Date.now();
-      const uniqueFilename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-      const storageRef = ref(storage, `items/${uniqueFilename}`);
-
-      // Upload the file
-      const snapshot = await uploadBytes(storageRef, file);
-      
-      // Get the download URL
-      const downloadUrl = await getDownloadURL(snapshot.ref);
-      
-      // Update preview and notify parent
-      setPreview(downloadUrl);
-      onImageSelect(file);
-      toast.success('Image uploaded successfully!');
+      if (uploadResult && uploadResult[0]) {
+        const downloadUrl = uploadResult[0].url;
+        setPreview(downloadUrl);
+        onImageSelect(file);
+        onImageUrl(downloadUrl);
+        toast.success('Image uploaded successfully!');
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('Failed to upload image');
