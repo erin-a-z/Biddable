@@ -36,9 +36,11 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
     setUploading(true);
 
     try {
-      const uploadResult = await startUpload([file]);
+      // Create a new array with just the file to ensure proper upload
+      const files = [new File([file], file.name, { type: file.type })];
+      const uploadResult = await startUpload(files);
       
-      if (uploadResult && uploadResult[0]) {
+      if (uploadResult?.[0]?.url) {
         const downloadUrl = uploadResult[0].url;
         setPreview(downloadUrl);
         onImageSelect(file);
@@ -51,7 +53,9 @@ export default function ImageUpload({ onImageSelect, onImageUrl, currentImageUrl
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.dismiss(loadingToastId);
-      toast.error('Failed to upload image');
+      toast.error('Failed to upload image. Please try again.');
+      setPreview('');
+      onImageSelect(null);
     } finally {
       setUploading(false);
     }
